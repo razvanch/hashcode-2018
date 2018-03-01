@@ -2,7 +2,7 @@ import argparse
 # import numpy
 # from heapq import heappop, heappush
 
-# from matplotlib import pyplot
+from matplotlib import pyplot
 
 def manhattan_distance(a, b):
     al, ac = a
@@ -19,9 +19,19 @@ if __name__ == "__main__":
     # MAX_STEPS = args.maxsteps
 
     line = args.in_file.readline()
+    distances = []
+    starts = []
+    ends = []
+    num = 0
 
     for line in args.in_file:
     	params = [int(x) for x in line.strip().split(" ")]
     	start = (params[0], params[1])
     	end = (params[2], params[3])
-    	print manhattan_distance(start, end)
+    	distances.append(manhattan_distance(start, end))
+    	starts.append(start)
+    	ends.append(end)
+    	num += 1
+
+    pyplot.plot([s[0] for s in starts], [s[1] for s in starts], 'o')
+    pyplot.show()
