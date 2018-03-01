@@ -46,7 +46,16 @@ if __name__ == "__main__":
     	ends.append(end)
     	num += 1
 
-    # start_times = [r.earliest for r in rides if r.start[0] <= 5000]
+    start_times = [r.earliest for r in rides if r.end[0] >= 5000 or r.end[1] >= 3000]
+    blob = float(len(start_times))
+    print "Media timpilor pentru end-uri departate este %lf" % (sum(start_times) / blob)
+
+    far_end_rides = [r for r in rides if r.end[0] >= 5000]
+    blob = len(start_times)
+    print "Sunt %d end-uri in dreapta" % blob
+    print "media start time-urilor lor e %lf" % (sum([r.earliest for r in far_end_rides]) / float(blob))
+
+    print [r.earliest for r in far_end_rides]
     pyplot.plot([r.start[0] for r in rides], [r.start[1] for r in rides], 'o')
     pyplot.plot([r.end[0] for r in rides], [r.end[1] for r in rides], 'ro')
     pyplot.show()

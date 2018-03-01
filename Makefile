@@ -4,7 +4,7 @@ SOURCE=good_b.cpp
 all: prob
 
 prob: ${SOURCE}
-	g++ -O3 ${SOURCE} -o prob
+	g++ --std=c++11 -O3 ${SOURCE} -o prob
 
 a: prob
 	./prob < a_example.in > a.out

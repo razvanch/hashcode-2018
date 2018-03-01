@@ -130,20 +130,37 @@ int main()
     }
 
     double total;
+    long long points = 0;
 
     for (Car *car: cars)
     {
         total += car->assigned.size();
 
         cout << car->assigned.size();
+        int time = 0, x = 0, y = 0, distance;
 
-        for (int ride: car->assigned)
+        for (int ride: car->assigned) {
             cout << ' ' << ride;
+
+            time += manhattan(x, y, rides[ride]->x_start, rides[ride]->y_start);
+            if (time <= rides[ride]->start_time)
+                points += bonus;
+
+            distance = manhattan(rides[ride]->x_start, rides[ride]->y_start,
+                              rides[ride]->x_end, rides[ride]->y_end);
+            time += distance;
+            if (time <= rides[ride]->last_time)
+                points += distance;
+
+            x = rides[ride]->x_end;
+            y = rides[ride]->y_end;
+        }
 
         cout << '\n';
     }
 
     cerr << total / n_rides << '\n';
+    cerr << points << '\n';
 
     return 0;
 }
