@@ -2,7 +2,7 @@
 
 all: prob
 
-prob:
+prob: prob.cpp
 	g++ -O3 prob.cpp -o prob
 
 a: prob
