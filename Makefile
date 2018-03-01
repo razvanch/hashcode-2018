@@ -1,9 +1,10 @@
 
+SOURCE=good_b.cpp
 
 all: prob
 
-prob: prob.cpp
-	g++ -O3 prob.cpp -o prob
+prob: ${SOURCE}
+	g++ -O3 ${SOURCE} -o prob
 
 a: prob
 	./prob < a_example.in > a.out

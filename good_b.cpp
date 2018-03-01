@@ -6,7 +6,6 @@
 
 using namespace std;
 
-#define INF     10000000000
 
 struct Ride {
     int x_start;
@@ -34,19 +33,25 @@ int inline manhattan(int x1, int y1, int x2, int y2)
     return abs(x1 - x2) + abs(y1 - y2);
 }
 
-double score_for(Car *car, Ride *ride)
+int score_for(Car *car, Ride *ride)
 {
     int to_ride = manhattan(car->x, car->y, ride->x_start, ride->x_end);
     int t_start = max(car->available_at + to_ride, ride->start_time);
     int score = 0;
 
-    if (t_start + ride->dist >= ride->last_time)
-        return -INF;
+    if (t_start + ride->dist > ride->last_time)
+        return -100000000;
 
-    return ride->dist + t_start == ride->start_time ? bonus : 0;
-    // return -ride->start_time;
-    // return ride->dist - (t_start - car->available_at - to_ride);
-    // return -to_ride;
+    if (t_start == ride->start_time)
+        score += bonus;
+
+    if (t_start + ride->dist <= ride->last_time)
+        score += ride->dist;
+
+    // return score;
+    // score -= t_start - car->available_at - to_ride;
+
+    return -car->available_at;
 }
 
 int ride_finish(Car *car, Ride *ride)
@@ -78,8 +83,6 @@ int main()
         rides.push_back(ride);
     }
 
-    vector<Ride*> initials = rides;
-
     vector<Car*> cars;
     priority_queue<Car *> pq;
 
@@ -95,47 +98,35 @@ int main()
         cars.push_back(car);
     }
 
-    bool still_good = true;
-
-    while (still_good)
-    {
-        still_good = false;
-
-        for (Car *car: cars)
+    sort(rides.begin(), rides.end(),
+        [](const Ride* a, const Ride* b) -> bool
         {
-            if (car->available_at > total_time)
-                continue;
+            return a->start_time < b->start_time;
+        }
+    );
 
-            Ride *best_ride = nullptr;
-            double best_score = -INF;
+    for (auto ride : rides)
+    {
+        Car *best_car = nullptr;
+        int best_score = -1000000;
 
-            for (Ride *ride : rides)
-            {
-                if (ride->index < 0)
-                    continue;
+        for (Car* candidate: cars)
+        {
+            int score = score_for(candidate, ride);
 
-                double score = score_for(car, ride);
-
-                if (score > best_score)
-                {
-                    best_score = score;
-                    best_ride = ride;
-                }
+            if (score > best_score) {
+                best_car = candidate;
+                best_score = score;
             }
-            
-            if (!best_ride)
-                continue;
+        }
 
-            still_good = true;
+        if (best_car != nullptr) {
+            best_car->assigned.push_back(ride->index);
+            best_car->available_at = ride_finish(best_car, ride);
 
-            car->assigned.push_back(best_ride->index);
-
-            car->available_at = ride_finish(car, best_ride);
-            car->x = best_ride->x_end;
-            car->y = best_ride->y_end;
-
-            best_ride->index = -1;
-        }        
+            best_car->x = ride->x_end;
+            best_car->y = ride->y_end;
+        }
     }
 
     double total;
@@ -151,16 +142,6 @@ int main()
 
         cout << '\n';
     }
-
-    // for (Car *car: cars)
-    // {
-    //     for (int i: car->assigned)
-    //     {
-    //         cerr << "(" << initials[i]->start_time << ", " << initials[i]->start_time + initials[i]->dist << ", " << initials[i]->last_time << "), ";
-    //     }
-
-    //     cerr << '\n';
-    // }
 
     cerr << total / n_rides << '\n';
 
